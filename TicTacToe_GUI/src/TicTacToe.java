@@ -48,6 +48,7 @@ public class TicTacToe extends JFrame implements ActionListener
 		}
 		super.setResizable(false);
 		super.setVisible(true);
+		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);   
 	}
 
 	@Override
