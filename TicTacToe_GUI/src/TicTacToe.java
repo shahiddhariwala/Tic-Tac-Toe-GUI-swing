@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class TicTacToe extends JFrame implements ActionListener
 {
@@ -19,7 +20,7 @@ public class TicTacToe extends JFrame implements ActionListener
 
 	public static enum GameStatus
 	{
-		Incomplete, Xwins, Zwins, Tie
+		Incomplete, Xwins, Owins, Tie
 	}
 
 	private JButton[][] buttons = new JButton[BOARD_SIZE][BOARD_SIZE];
@@ -54,6 +55,182 @@ public class TicTacToe extends JFrame implements ActionListener
 	{
 		JButton ClickedButton = (JButton) e.getSource();
 		this.makeMove(ClickedButton);
+		GameStatus gs = this.getGameStatus();
+		if (gs == GameStatus.Incomplete)
+		{
+			return;
+		}
+		this.declareWinner(gs);
+
+	}
+
+	private void declareWinner(GameStatus gs)
+	{
+		if (gs == GameStatus.Xwins)
+		{
+			JOptionPane.showMessageDialog(this, "X Wins");
+		} else if (gs == GameStatus.Owins)
+		{
+			JOptionPane.showMessageDialog(this, "O Wins");
+		} else
+		{
+			JOptionPane.showMessageDialog(this, "Its Tie");
+		}
+
+		int choice = JOptionPane.showConfirmDialog(this, "Play Again ?", "Tic-Tac-Toe", JOptionPane.YES_NO_OPTION);
+		if (choice == 0)
+		{
+
+			// refresh the game
+			for (int row = 0; row < buttons.length; row++)
+			{
+				for (int col = 0; col < buttons.length; col++)
+				{
+					this.buttons[row][col].setText("");
+				}
+			}
+			this.crossTurn = true;
+		} else
+		{
+			this.dispose();
+		}
+
+	}
+
+	private GameStatus getGameStatus()
+	{
+		String text1 = "";
+		String text2 = "";
+		int row = 0;
+		int col = 0;
+		// text inside rows
+		row = 0;
+		while (row < BOARD_SIZE)
+		{
+			col = 0;
+			while (col < BOARD_SIZE - 1)
+			{
+				text1 = this.buttons[row][col].getText();
+				text2 = this.buttons[row][col + 1].getText();
+				if (text1.length() == 0 || (!text1.equals(text2)))
+				{
+					break;
+					// not a winner in this row
+				}
+				col++;
+			}
+			if (col == BOARD_SIZE - 1)
+			{
+
+				if (text1.equals("X"))
+				{
+					return GameStatus.Xwins;
+				} else
+				{
+					return GameStatus.Owins;
+
+				}
+			}
+			row++;
+		}
+
+		// text inside col
+		col = 0;
+		while (col < BOARD_SIZE)
+		{
+			row = 0;
+			while (row < BOARD_SIZE - 1)
+			{
+				text1 = this.buttons[row][col].getText();
+				text2 = this.buttons[row + 1][col].getText();
+				if (text1.length() == 0 || (!text1.equals(text2)))
+				{
+					break;
+					// not a winner in this row
+				}
+				row++;
+			}
+			if (row == BOARD_SIZE - 1)
+			{
+
+				if (text1.equals("X"))
+				{
+					return GameStatus.Xwins;
+				} else
+				{
+					return GameStatus.Owins;
+
+				}
+			}
+			col++;
+		}
+
+		// test for diagonal1
+
+		row = 0;
+		col = 0;
+		while (row < BOARD_SIZE - 1)
+		{
+			text1 = this.buttons[row][col].getText();
+			text2 = this.buttons[row + 1][col + 1].getText();
+			if (text1.length() == 0 || (!text1.equals(text2)))
+			{
+				break;
+				// not a winner in this diagonal
+			}
+			row++;
+			col++;
+		}
+		if (row == BOARD_SIZE - 1)
+		{
+
+			if (text1.equals("X"))
+			{
+				return GameStatus.Xwins;
+			} else
+			{
+				return GameStatus.Owins;
+			}
+		}
+		// test for diagonal2
+		row = BOARD_SIZE - 1;
+		col = 0;
+		while (row > 0)
+		{
+			text1 = this.buttons[row][col].getText();
+			text2 = this.buttons[row - 1][col + 1].getText();
+			if (text1.length() == 0 || (!text1.equals(text2)))
+			{
+				break;
+				// not a winner in this diagonal
+			}
+			row--;
+			col++;
+		}
+		if (row == 0)
+		{
+
+			if (text1.equals("X"))
+			{
+				return GameStatus.Xwins;
+			} else
+			{
+				return GameStatus.Owins;
+			}
+		}
+
+		//
+		for (row = 0; row < BOARD_SIZE; row++)
+		{
+			for (col = 0; col < BOARD_SIZE; col++)
+			{
+				if (this.buttons[row][col].getText().length() == 0)
+				{
+					return GameStatus.Incomplete;
+				}
+			}
+		}
+		return GameStatus.Tie;
 	}
 
 	private void makeMove(JButton clickedButton)
@@ -62,6 +239,7 @@ public class TicTacToe extends JFrame implements ActionListener
 		if (buttonText.length() > 0)
 		{
 			// Something is already present
+			JOptionPane.showMessageDialog(this, "Invalid Move");
 		} else
 		{
 			if (this.crossTurn == true)
